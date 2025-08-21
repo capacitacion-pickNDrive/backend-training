@@ -17,6 +17,12 @@ export default {
    * run jobs, or perform some special logic.
    */
   async bootstrap({ strapi }) {
+
+    /*
+    await strapi.db.query('api::task.task').deleteMany({});
+    await strapi.db.query('api::category.category').deleteMany({});
+     */
+
     // Check if 'Front-end' category already exists
     const alreadySeeded = await strapi.db.query('api::category.category').findOne({
       where: {
@@ -24,7 +30,7 @@ export default {
       }
     });
 
-    if (alreadySeeded == null) {
+    if (!alreadySeeded) {
 
       try {
 
@@ -101,12 +107,12 @@ export default {
           }
         });
 
-        console.log('Database seeded');
+        console.log('\nDatabase seeded');
       } catch (error) {
-        console.error('Error seeding database: ', error);
+        console.error('\nError seeding database: ', error);
       }
     } else {
-      console.log('Database already seeded');
+      console.log('\nDatabase already seeded');
     }
   }
 };
