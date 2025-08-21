@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "categorias",
+  "info": {
+    "singularName": "categoria",
+    "pluralName": "categorias",
+    "displayName": "Categoria"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Prioridad": {
+      "type": "enumeration",
+      "enum": [
+        "Baja",
+        "Media",
+        "Alta"
+      ]
+    },
+    "Nombre": {
+      "type": "string"
+    },
+    "Color": {
+      "type": "enumeration",
+      "enum": [
+        "Verde",
+        "Rojo",
+        "Amarillo",
+        "Naranja",
+        "Azul",
+        "Violeta",
+        "Rosa",
+        "Negro",
+        "Marron",
+        "Celeste"
+      ]
+    },
+    "tareas": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::tarea.tarea",
+      "mappedBy": "categoria"
+    }
+  }
+}
