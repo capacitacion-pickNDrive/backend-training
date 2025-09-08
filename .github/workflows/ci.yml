@@ -27,4 +27,9 @@ jobs:
         run: npm run build
 
       - name: Run
-        run: npm run start -- --silent &
+        run: |
+          npm run start &
+          sleep 15
+
+      - name: Verify
+        run: curl -f http://localhost:1337 || exit 1
