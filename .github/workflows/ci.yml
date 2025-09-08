@@ -4,26 +4,41 @@ on:
   push:
     branches: ["**"]
   pull_request:
-    branches: ["**"]
+    branches: ["main"]
 
 jobs:
   ci:
     runs-on: ubuntu-latest
+    env:
+      NODE_ENV: development
+      PORT: 1337
+      HOST: 0.0.0.0
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: docker build -t strapi-app .
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
 
-      - name: Run Strapi container
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install better-sqlite3
+        run: npm install better-sqlite3 --no-save
+
+      - name: Build admin panel
+        run: npm run build
+
+      - name: Start Strapi and verify
         run: |
-          docker run -d --name strapi-ci -p 1337:1337 strapi-app
-          npx -y wait-on http://localhost:1337 --timeout 60000
-
-      - name: Verify Strapi
-        run: curl -f http://localhost:1337
-
-      - name: Stop Strapi container
-        run: docker stop strapi-ci
+          npm run start &
+          STRAPI_PID=$!
+          echo "Waiting for Strapi to start..."
+          npx -y wait-on http://localhost:1337 --timeout 180000
+          echo "Strapi is up!"
+          curl -f http://localhost:1337
+          kill $STRAPI_PID
