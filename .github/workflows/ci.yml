@@ -2,34 +2,28 @@ name: Strapi CI
 
 on:
   push:
-    branches: [ "**" ]
+    branches: ["**"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["**"]
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
-      - name: CI
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Config
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
+      - name: Build Docker image
+        run: docker build -t strapi-app .
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build
-        run: npm run build
-
-      - name: Install wait-on
-        run: npm install -g wait-on
-
-      - name: Start Strapi and wait
+      - name: Run Strapi container
         run: |
-          npm run start &
-          npx wait-on http://localhost:1337
+          docker run -d --name strapi-ci -p 1337:1337 strapi-app
+          npx -y wait-on http://localhost:1337 --timeout 60000
+
+      - name: Verify Strapi
+        run: curl -f http://localhost:1337
+
+      - name: Stop Strapi container
+        run: docker stop strapi-ci
