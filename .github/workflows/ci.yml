@@ -26,10 +26,10 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Run
+      - name: Install wait-on
+        run: npm install -g wait-on
+
+      - name: Start Strapi and wait
         run: |
           npm run start &
-          sleep 15
-
-      - name: Verify
-        run: curl -f http://localhost:1337 || exit 1
+          npx wait-on http://localhost:1337
