@@ -9,6 +9,8 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
 
     steps:
       - name: Checkout repository
@@ -25,3 +27,9 @@ jobs:
 
       - name: Build admin panel
         run: npm run build
+
+      - name: Install better-sqlite3
+        run: npm install better-sqlite3 --no-save
+
+      - name: Run Strapi tests
+        run: npm test
