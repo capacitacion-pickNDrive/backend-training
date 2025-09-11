@@ -1,0 +1,36 @@
+name: CD Strapi
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  call-ci:
+    uses: ./.github/workflows/ci.yml
+    with:
+      branch: main
+
+  deploy:
+    name: Continuous Deployment
+    runs-on: ubuntu-latest
+    needs: call-ci
+
+    steps:
+      - name: Deploy on VM
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_IP }}
+          username: "azureuser"
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: |
+            cd pickndrive-back
+
+            # Update repo
+            git fetch origin main
+            git checkout main
+            git reset --hard origin/main
+
+            # Pull latest images & restart services
+            sudo docker compose pull
+            sudo docker compose up -d --build
