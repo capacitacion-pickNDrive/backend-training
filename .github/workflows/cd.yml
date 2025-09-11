@@ -24,7 +24,7 @@ jobs:
           username: "azureuser"
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
-            cd pickndrive-back
+            cd backend-training
 
             # Update repo
             git fetch origin main
